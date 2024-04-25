@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.models.user import User
+from app.models import User
 from app.core_services import db
 from app.api.serializers.user import UserSchema
 
@@ -7,13 +7,13 @@ user_blueprint = Blueprint('user', __name__)
 user_schema = UserSchema()
 
 
-@user_blueprint.route('/users', methods=['GET'])
+@user_blueprint.route('/user/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     return jsonify(user_schema.dump(users, many=True)), 200
 
 
-@user_blueprint.route('/users/<int:user_id>', methods=['GET'])
+@user_blueprint.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = User.query.get(user_id)
     if user:
@@ -21,8 +21,15 @@ def get_user(user_id):
     else:
         return jsonify({'message': 'User not found'}), 404
 
+@user_blueprint.route('/user/email/<string:email>', methods=['GET'])
+def get_user_by_email(email):
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return jsonify(user_schema.dump(user)), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
 
-@user_blueprint.route('/users', methods=['POST'])
+@user_blueprint.route('/user', methods=['POST'])
 def create_user():
     data = request.json
     if not data:
@@ -36,7 +43,7 @@ def create_user():
     return jsonify(user_schema.dump(new_user)), 201
 
 
-@user_blueprint.route('/users/<int:user_id>', methods=['PUT'])
+@user_blueprint.route('/user/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     user = User.query.get(user_id)
     if not user:
@@ -54,7 +61,7 @@ def update_user(user_id):
     return jsonify(user_schema.dump(user)), 200
 
 
-@user_blueprint.route('/users/<int:user_id>', methods=['DELETE'])
+@user_blueprint.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     user = User.query.get(user_id)
     if not user:

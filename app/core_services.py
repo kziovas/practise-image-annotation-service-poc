@@ -8,7 +8,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
 
-def init_app(app: Flask):
+def init_core_services(app: Flask):
     # Initialize database with the app
     db.init_app(app)
 
