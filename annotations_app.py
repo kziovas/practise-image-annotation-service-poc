@@ -1,11 +1,13 @@
 from flask import Flask
 from app.config import Config
 from app.core_services import init_app
+from app.api.user import user_blueprint
 
 def create_app()->Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
     init_app(app)
+    app.register_blueprint(user_blueprint)
 
     return app
 
