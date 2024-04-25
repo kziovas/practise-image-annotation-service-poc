@@ -17,12 +17,15 @@ erDiagram
     Image {
         id INT PK
         filename VARCHAR
+        user_id INT FK
     }
-
+    
     Comment {
         id INT PK
         body TEXT
         timestamp DATETIME
+        user_id INT FK
+        image_id INT FK
     }
 
     Annotation {
