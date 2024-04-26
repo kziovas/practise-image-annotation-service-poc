@@ -19,6 +19,7 @@ class Image(TimestampMixin, db.Model):
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     _annotation_status = Column(Enum(AnnotationStatus), default=AnnotationStatus.Queued)
     comments = db.relationship("Comment", backref="image", lazy="dynamic")
+    summary = db.relationship("ImageSummary", backref="image", lazy="dynamic")
     annotations = db.relationship(
         "Annotation", secondary=image_annotation_association, back_populates="images"
     )

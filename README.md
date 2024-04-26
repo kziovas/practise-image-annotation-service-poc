@@ -8,33 +8,57 @@ title: Entity Relationship Diagram
 
 erDiagram
     User {
-        id INT PK
+        id UUID PK
         username VARCHAR
         email VARCHAR
         password_hash VARCHAR
+        created_at DATETIME
+        updated_at DATETIME
+        deleted_at DATETIME
     }
 
     Image {
-        id INT PK
+        id UUID PK
         filename VARCHAR
-        user_id INT FK
+        user_id UUID FK
+        annotation_status ENUM
+        created_at DATETIME
+        updated_at DATETIME
+        deleted_at DATETIME
     }
-    
+
     Comment {
-        id INT PK
+        id UUID PK
         body TEXT
-        timestamp DATETIME
-        user_id INT FK
-        image_id INT FK
+        user_id UUID FK
+        image_id UUID FK
+        created_at DATETIME
+        updated_at DATETIME
+        deleted_at DATETIME
     }
 
     Annotation {
-        id INT PK
+        id UUID PK
         name VARCHAR
+        created_at DATETIME
+        updated_at DATETIME
+        deleted_at DATETIME
+    }
+
+    ImageSummary {
+        id UUID PK
+        image_id UUID FK
+        comment_summary TEXT
+        comment_sentiments_score INTEGER
+        created_at DATETIME
+        updated_at DATETIME
+        deleted_at DATETIME
     }
 
     User ||--o{ Comment : "writes"
     User ||--o{ Image : "uploads"
     Image ||--o{ Comment : "has"
     Image }o--o{ Annotation : "has"
+    Image ||--|| ImageSummary : "has"
+
 ```
