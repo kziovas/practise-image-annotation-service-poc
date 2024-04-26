@@ -1,6 +1,7 @@
 from uuid import UUID
 
 import nltk
+from flask import Flask
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.parsers.plaintext import PlaintextParser
@@ -12,9 +13,10 @@ from app.repos.image_summary import ImageSummaryRepo
 
 class ImageSummaryService:
     @classmethod
-    def initialize(cls):
-        nltk.download("punkt")
-        nltk.download("vader_lexicon")
+    def initialize(cls, app: Flask):
+        with app.app_context():
+            nltk.download("punkt")
+            nltk.download("vader_lexicon")
 
     @staticmethod
     def update_image_summary(image_id: UUID):

@@ -1,6 +1,7 @@
 import os
+import uuid
 
-from sqlalchemy import UUID, Column, Enum, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import UUID, Column, Enum, ForeignKey, String, UniqueConstraint
 
 from app.enums import AnnotationStatus
 from app.models.common import TimestampMixin
@@ -8,15 +9,20 @@ from app.services.core_services import db
 
 image_annotation_association = db.Table(
     "image_annotation_association",
-    Column("image_id", Integer, ForeignKey("image.id"), primary_key=True),
-    Column("annotation_id", Integer, ForeignKey("annotation.id"), primary_key=True),
+    Column("image_id", UUID(as_uuid=True), ForeignKey("image.id"), primary_key=True),
+    Column(
+        "annotation_id",
+        UUID(as_uuid=True),
+        ForeignKey("annotation.id"),
+        primary_key=True,
+    ),
 )
 
 
 class Image(TimestampMixin, db.Model):
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     _filename = Column("filename", String(128), nullable=False)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
     _annotation_status = Column(Enum(AnnotationStatus), default=AnnotationStatus.Queued)
     comments = db.relationship(
         "Comment", backref="image", lazy="dynamic", cascade="all, delete-orphan"

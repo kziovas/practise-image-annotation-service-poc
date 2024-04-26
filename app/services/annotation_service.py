@@ -1,6 +1,8 @@
 import random
 from uuid import UUID
 
+from flask import Flask
+
 from app.enums import AnnotationStatus
 from app.errors import ImageNotFound
 from app.repos.annotation import AnnotationRepo
@@ -17,18 +19,18 @@ class AnnotationService:
         return None
 
     @classmethod
-    def initialize(cls) -> None:
-        try:
-            all_annotations = AnnotationRepo.get_all()
-            if len(all_annotations) < cls.MIN_MOCK_ANNOTATION_NUMBER:
-                num_annotations_to_create = cls.MIN_MOCK_ANNOTATION_NUMBER - len(
-                    all_annotations
-                )
-                for _ in range(num_annotations_to_create):
-                    cls._create_random_annotation()
-
-        except Exception as e:
-            raise e
+    def initialize(cls, app: Flask) -> None:
+        with app.app_context():
+            try:
+                all_annotations = AnnotationRepo.get_all()
+                if len(all_annotations) < cls.MIN_MOCK_ANNOTATION_NUMBER:
+                    num_annotations_to_create = cls.MIN_MOCK_ANNOTATION_NUMBER - len(
+                        all_annotations
+                    )
+                    for _ in range(num_annotations_to_create):
+                        cls._create_random_annotation()
+            except Exception as e:
+                raise e
 
     @classmethod
     def simulate_annotation(cls, image_id: UUID) -> None:

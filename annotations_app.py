@@ -13,8 +13,8 @@ from app.services.image_summary_service import ImageSummaryService
 def init_app(app: Flask) -> Flask:
     app.config.from_object(Config)
     init_core_services(app)
-    ImageSummaryService.initialize()
-    AnnotationService.initialize()
+    ImageSummaryService.initialize(app)
+    AnnotationService.initialize(app)
     return app
 
 

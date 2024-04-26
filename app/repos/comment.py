@@ -1,8 +1,8 @@
 from typing import List, Optional
 from uuid import UUID
 
-from app.services.core_services import db
 from app.models.comment import Comment
+from app.services.core_services import db
 
 
 class CommentRepo:
