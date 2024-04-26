@@ -1,13 +1,14 @@
-from datetime import datetime
-from app.core_services import db
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text
 
-class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    image_id = db.Column(db.Integer, db.ForeignKey('image.id'), nullable=False)
+from app.core_services import db
+from app.models.common import TimestampMixin
+
+
+class Comment(TimestampMixin, db.Model):
+    id = Column(Integer, primary_key=True)
+    body = Column(Text)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    image_id = Column(Integer, ForeignKey("image.id"), nullable=False)
 
     def __repr__(self):
-        return f'<Comment {self.id}>'
-
+        return f"<Comment {self.id}>"

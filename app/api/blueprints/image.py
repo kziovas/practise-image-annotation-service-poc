@@ -26,12 +26,22 @@ def get_image(image_id):
 
 
 @image_blueprint.route("/image/user/<int:user_id>", methods=["GET"])
-def get_images_by_user(user_id):
+def get_images_by_user_id(user_id):
     user = User.query.get(user_id)
     if not user:
         return jsonify({"message": "User not found"}), 404
 
     images = Image.query.filter_by(user_id=user_id).all()
+    return jsonify(view_image_schema.dump(images, many=True)), 200
+
+
+@image_blueprint.route("/image/user/<string:username>", methods=["GET"])
+def get_images_by_username(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    images = Image.query.filter_by(user_id=user.id).all()
     return jsonify(view_image_schema.dump(images, many=True)), 200
 
 

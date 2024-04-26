@@ -1,10 +1,16 @@
+from sqlalchemy import Column, Integer, String
+
 from app.core_services import db
+from app.models.common import TimestampMixin
 from app.models.image import image_annotation_association
 
-class Annotation(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True)
-    images = db.relationship('Image', secondary=image_annotation_association, back_populates='annotations')
+
+class Annotation(TimestampMixin, db.Model):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True)
+    images = db.relationship(
+        "Image", secondary=image_annotation_association, back_populates="annotations"
+    )
 
     def __repr__(self):
-        return f'<Annotation {self.name}>'
+        return f"<Annotation {self.name}>"

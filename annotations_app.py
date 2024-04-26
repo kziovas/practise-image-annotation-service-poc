@@ -1,9 +1,9 @@
 from flask import Flask
 
-from app.api.annotation import annotation_blueprint
-from app.api.comment import comment_blueprint
-from app.api.image import image_blueprint
-from app.api.user import user_blueprint
+from app.api.blueprints.annotation import annotation_blueprint
+from app.api.blueprints.comment import comment_blueprint
+from app.api.blueprints.image import image_blueprint
+from app.api.blueprints.user import user_blueprint
 from app.config import Config
 from app.core_services import init_core_services
 
