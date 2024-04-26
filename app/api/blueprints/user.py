@@ -1,8 +1,7 @@
 from flask import Blueprint, jsonify, request
 
 from app.api.serializers.user import UserSchema
-from app.core_services import db
-from app.models import User
+from app.repos.user import UserRepo
 
 user_blueprint = Blueprint("user", __name__)
 user_schema = UserSchema()
@@ -10,13 +9,13 @@ user_schema = UserSchema()
 
 @user_blueprint.route("/user/users", methods=["GET"])
 def get_users():
-    users = User.query.all()
+    users = UserRepo.get_all()
     return jsonify(user_schema.dump(users, many=True)), 200
 
 
 @user_blueprint.route("/user/<int:user_id>", methods=["GET"])
 def get_user(user_id):
-    user = User.query.get(user_id)
+    user = UserRepo.get_by_id(user_id)
     if user:
         return jsonify(user_schema.dump(user)), 200
     else:
@@ -25,7 +24,7 @@ def get_user(user_id):
 
 @user_blueprint.route("/user/email/<string:email>", methods=["GET"])
 def get_user_by_email(email):
-    user = User.query.filter_by(email=email).first()
+    user = UserRepo.get_by_email(email)
     if user:
         return jsonify(user_schema.dump(user)), 200
     else:
@@ -34,7 +33,7 @@ def get_user_by_email(email):
 
 @user_blueprint.route("/user/username/<string:username>", methods=["GET"])
 def get_user_by_username(username):
-    user = User.query.filter_by(username=username).first()
+    user = UserRepo.get_by_username(username)
     if user:
         return jsonify(user_schema.dump(user)), 200
     else:
@@ -49,19 +48,18 @@ def create_user():
     errors = user_schema.validate(data)
     if errors:
         return jsonify(errors), 400
-    new_user = User(
+    new_user = UserRepo.create(
         username=data.get("username"),
         email=data.get("email"),
         password_hash=data.get("password_hash"),
     )
-    db.session.add(new_user)
-    db.session.commit()
+
     return jsonify(user_schema.dump(new_user)), 201
 
 
 @user_blueprint.route("/user/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
-    user = User.query.get(user_id)
+    user = UserRepo.get_by_id(user_id)
     if not user:
         return jsonify({"message": "User not found"}), 404
     data = request.json
@@ -70,18 +68,22 @@ def update_user(user_id):
     errors = user_schema.validate(data)
     if errors:
         return jsonify(errors), 400
-    user.username = data.get("username", user.username)
-    user.email = data.get("email", user.email)
-    user.password_hash = data.get("password_hash", user.password_hash)
-    db.session.commit()
-    return jsonify(user_schema.dump(user)), 200
+    updated_user = UserRepo.update(
+        user_id=user_id,
+        username=data.get("username", user.username),
+        email=data.get("email", user.email),
+        password_hash=data.get("password_hash", user.password_hash),
+    )
+
+    return jsonify(user_schema.dump(updated_user)), 200
 
 
 @user_blueprint.route("/user/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
-    user = User.query.get(user_id)
+    user = UserRepo.get_by_id(user_id)
     if not user:
         return jsonify({"message": "User not found"}), 404
-    db.session.delete(user)
-    db.session.commit()
-    return "", 204
+    if UserRepo.delete(user_id=user_id):
+        return "", 204
+    else:
+        return jsonify({"message": "User deletion failed"}), 404

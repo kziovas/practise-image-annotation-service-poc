@@ -12,7 +12,7 @@ class ImageSchema(Schema):
 
 
 class UpdateImageSchema(ImageSchema):
-    annotation_ids = fields.List(fields.Int, load_only=True)
+    annotation_ids = fields.List(fields.Int, required=False, load_only=True)
 
 
 class ViewImageSchema(ImageSchema):
