@@ -1,11 +1,11 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import UUID, Column, String
 
 from app.core_services import db
 from app.models.common import TimestampMixin
 
 
 class User(TimestampMixin, db.Model):
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID, primary_key=True)
     username = Column(String(64), index=True, unique=True)
     email = Column(String(120), index=True, unique=True)
     password_hash = Column(db.String(128))

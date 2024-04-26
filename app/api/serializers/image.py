@@ -11,9 +11,10 @@ class ImageSchema(Schema):
     comments = fields.Nested(CommentSchema, many=True, dump_only=True)
 
 
-class ModifyImageSchema(ImageSchema):
+class UpdateImageSchema(ImageSchema):
     annotation_ids = fields.List(fields.Int, load_only=True)
 
 
 class ViewImageSchema(ImageSchema):
     annotations = fields.Nested(AnnotationSchema, many=True, dump_only=True)
+    annotation_status = fields.Str(required=True, dump_only=True)

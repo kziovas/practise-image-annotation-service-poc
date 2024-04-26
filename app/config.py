@@ -7,4 +7,4 @@ class Config:
         os.environ.get("DATABASE_URL")
         or "postgresql://admin:password@localhost:5432/image_annotation_db"
     )
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False

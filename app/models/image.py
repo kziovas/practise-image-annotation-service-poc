@@ -1,11 +1,6 @@
-from sqlalchemy import (
-    Column,
-    Enum,
-    ForeignKey,
-    Integer,
-    String,
-    UniqueConstraint,
-)
+import os
+
+from sqlalchemy import UUID, Column, Enum, ForeignKey, Integer, String, UniqueConstraint
 
 from app.core_services import db
 from app.enums import AnnotationStatus
@@ -19,19 +14,17 @@ image_annotation_association = db.Table(
 
 
 class Image(TimestampMixin, db.Model):
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID, primary_key=True)
     _filename = Column("filename", String(128), nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    annotation_status = Column(
-        Enum(AnnotationStatus), nullable=False, default=AnnotationStatus.Queued
-    )
+    _annotation_status = Column(Enum(AnnotationStatus), default=AnnotationStatus.Queued)
     comments = db.relationship("Comment", backref="image", lazy="dynamic")
     annotations = db.relationship(
         "Annotation", secondary=image_annotation_association, back_populates="images"
     )
 
     __table_args__ = (
-        UniqueConstraint("user_id", "_filename", name="unique_user_filename"),
+        UniqueConstraint("user_id", "filename", name="unique_user_filename"),
     )
 
     def __repr__(self):
@@ -50,10 +43,24 @@ class Image(TimestampMixin, db.Model):
         if value not in existing_filenames:
             self._filename = value
         else:
+            # Extract file name and extension
+            filename, extension = os.path.splitext(value)
             counter = 1
-            while f"{value}_{counter}" in existing_filenames:
+            new_filename = f"{filename}_{counter}{extension}"
+            while new_filename in existing_filenames:
                 counter += 1
-            self._filename = f"{value}_{counter}"
+                new_filename = f"{filename}_{counter}{extension}"
+            self._filename = new_filename
+
+    @property
+    def annotation_status(self):
+        return self._annotation_status.value
+
+    @annotation_status.setter
+    def annotation_status(self, status):
+        if status not in AnnotationStatus:
+            raise ValueError("Invalid annotation status")
+        self._annotation_status = status
 
     @property
     def image_path(self):

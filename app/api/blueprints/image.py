@@ -1,13 +1,13 @@
 from flask import Blueprint, jsonify, request
 
 from app.api.serializers.comment import CommentSchema
-from app.api.serializers.image import ModifyImageSchema, ViewImageSchema
+from app.api.serializers.image import UpdateImageSchema, ViewImageSchema
 from app.core_services import db
 from app.models import Annotation, Comment, Image, User
 
 image_blueprint = Blueprint("image", __name__)
 view_image_schema = ViewImageSchema()
-modify_image_schema = ModifyImageSchema()
+modify_image_schema = UpdateImageSchema()
 
 
 @image_blueprint.route("/image", methods=["GET"])
@@ -70,7 +70,8 @@ def create_image():
     # Extract annotation IDs from the request data
     annotation_ids = data.get("annotation_ids", [])
 
-    new_image = Image(filename=data.get("filename"), user_id=user_id)
+    new_image = Image(user_id=user_id)
+    new_image.filename = data.get("filename")
 
     # Associate annotations with the image
     if annotation_ids:
