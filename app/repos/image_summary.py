@@ -21,36 +21,18 @@ class ImageSummaryRepo:
         return cls.model.query.get(summary_id)
 
     @classmethod
-    def create(
-        cls,
-        image_id: UUID,
-        comment_summary: str,
-        comment_count: int,
-        sentiment_score: int,
-    ) -> ImageSummary:
-        new_summary = ImageSummary(
-            image_id=image_id,
-            comment_count=comment_count,
-            comment_summary=comment_summary,
-            sentiment_score=sentiment_score,
-        )
+    def create(cls, **kwargs) -> ImageSummary:
+        new_summary = ImageSummary(**kwargs)
         db.session.add(new_summary)
         db.session.commit()
         return new_summary
 
     @classmethod
-    def update(
-        cls,
-        summary_id: UUID,
-        comment_summary: str,
-        comment_count: int,
-        sentiment_score: int,
-    ) -> Optional[ImageSummary]:
+    def update(cls, summary_id: UUID, **kwargs) -> Optional[ImageSummary]:
         summary = cls.model.query.get(summary_id)
         if summary:
-            summary.comment_summary = comment_summary
-            summary.sentiment_score = sentiment_score
-            summary.comment_count = comment_count
+            for key, value in kwargs.items():
+                setattr(summary, key, value)
             db.session.commit()
         return summary
 

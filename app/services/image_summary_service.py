@@ -23,6 +23,13 @@ class ImageSummaryService:
         # Get all comments for the image
         comments = CommentRepo.get_by_image_id(image_id)
         comment_count = len(comments)
+        if comment_count == 0:
+            average_comment_length = 0
+            users_commented_count = 0
+        else:
+            total_comment_length = sum(len(comment.body) for comment in comments)
+            average_comment_length = total_comment_length / comment_count
+            users_commented_count = len(set(comment.user_id for comment in comments))
 
         comment_text = " ".join(comment.body for comment in comments)
 
@@ -36,12 +43,19 @@ class ImageSummaryService:
                 summary_id=existing_image_summary.id,
                 comment_summary=comment_summary,
                 comment_count=comment_count,
+                average_comment_length=average_comment_length,
+                users_commented_count=users_commented_count,
                 sentiment_score=sentiment_score,
             )
 
         else:
             ImageSummaryRepo.create(
-                image_id, comment_summary, comment_count, sentiment_score
+                image_id=image_id,
+                comment_summary=comment_summary,
+                comment_count=comment_count,
+                average_comment_length=average_comment_length,
+                users_commented_count=users_commented_count,
+                sentiment_score=sentiment_score,
             )
 
     @staticmethod

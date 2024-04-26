@@ -49,6 +49,9 @@ erDiagram
         id UUID PK
         image_id UUID FK
         comment_summary TEXT
+        comment_count INTEGER
+        average_comment_length INTEGER
+        users_commented_count INTEGER
         sentiment_score INTEGER
         created_at DATETIME
         updated_at DATETIME

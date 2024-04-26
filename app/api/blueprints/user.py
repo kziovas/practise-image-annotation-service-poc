@@ -13,7 +13,7 @@ def get_users():
     return jsonify(user_schema.dump(users, many=True)), 200
 
 
-@user_blueprint.route("/user/<int:user_id>", methods=["GET"])
+@user_blueprint.route("/user/<uuid:user_id>", methods=["GET"])
 def get_user(user_id):
     user = UserRepo.get_by_id(user_id)
     if user:
@@ -57,7 +57,7 @@ def create_user():
     return jsonify(user_schema.dump(new_user)), 201
 
 
-@user_blueprint.route("/user/<int:user_id>", methods=["PUT"])
+@user_blueprint.route("/user/<uuid:user_id>", methods=["PUT"])
 def update_user(user_id):
     user = UserRepo.get_by_id(user_id)
     if not user:
@@ -78,7 +78,7 @@ def update_user(user_id):
     return jsonify(user_schema.dump(updated_user)), 200
 
 
-@user_blueprint.route("/user/<int:user_id>", methods=["DELETE"])
+@user_blueprint.route("/user/<uuid:user_id>", methods=["DELETE"])
 def delete_user(user_id):
     user = UserRepo.get_by_id(user_id)
     if not user:

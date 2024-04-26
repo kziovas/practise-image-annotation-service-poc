@@ -11,6 +11,8 @@ class ImageSummary(TimestampMixin, db.Model):
     image_id = Column(UUID(as_uuid=True), ForeignKey("image.id"), nullable=False)
     comment_count = Column(Integer, default=0)
     comment_summary = Column(Text, default="")
+    average_comment_length = Column(Integer, default=0)
+    users_commented_count = Column(Integer, default=0)
     sentiment_score = Column(Integer, default=50)
 
     def __repr__(self) -> str:

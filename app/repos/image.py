@@ -22,8 +22,8 @@ class ImageRepo:
         return cls.model.query.filter_by(user_id=user_id).all()
 
     @classmethod
-    def create(cls, user_id: UUID, filename: str) -> Image:
-        new_image = Image(user_id=user_id, filename=filename)
+    def create(cls, user_id: UUID, filename: str, **kwargs) -> Image:
+        new_image = Image(user_id=user_id, filename=filename, **kwargs)
         db.session.add(new_image)
         db.session.commit()
         return new_image
@@ -35,6 +35,7 @@ class ImageRepo:
             for key, value in kwargs.items():
                 setattr(image, key, value)
             db.session.commit()
+
         return image
 
     @classmethod

@@ -38,13 +38,14 @@ class AnnotationService:
             image = ImageRepo.get_by_id(image_id)
             if not image:
                 raise ImageNotFound("Image not found")
-
-            if image.annotation_status == AnnotationStatus.Queued:
+            if image.annotation_status == AnnotationStatus.Queued.value:
                 ImageRepo.update(
-                    image_id, annotation_status=AnnotationStatus.Processing
+                    image_id=image_id, annotation_status=AnnotationStatus.Processing
                 )
-            elif image.annotation_status == AnnotationStatus.Processing:
-                ImageRepo.update(image_id, annotation_status=AnnotationStatus.Success)
+            elif image.annotation_status == AnnotationStatus.Processing.value:
+                ImageRepo.update(
+                    image_id=image_id, annotation_status=AnnotationStatus.Success
+                )
                 all_annotations = AnnotationRepo.get_all()
                 if (
                     all_annotations
@@ -54,6 +55,5 @@ class AnnotationService:
                         all_annotations, cls.MIN_MOCK_ANNOTATION_NUMBER
                     )
                     ImageRepo.update(image_id, annotations=random_annotations)
-
         except Exception as e:
             raise e

@@ -1,13 +1,9 @@
-from sqlalchemy import event
-from sqlalchemy.orm import Session
+from typing import List
+from uuid import UUID
 
-from app.models.image import Image
 from app.services.annotation_service import AnnotationService
 
 
-@event.listens_for(Image, "load")
-@event.listens_for(Image, "refresh")
-@event.listens_for(Image, "persistent_to_detached")
-def trigger_simulate_annotation(target: Image, context: Session):
-    breakpoint()
-    AnnotationService.simulate_annotation(target.id)
+def trigger_simulate_image_annotation(image_ids: List[UUID]):
+    for image_id in image_ids:
+        AnnotationService.simulate_annotation(image_id)
