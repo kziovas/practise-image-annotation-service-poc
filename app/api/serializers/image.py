@@ -5,14 +5,14 @@ from app.api.serializers.comment import CommentSchema
 
 
 class ImageSchema(Schema):
-    id = fields.Int(dump_only=True)
+    id = fields.UUID(dump_only=True)
     filename = fields.Str(required=True)
-    user_id = fields.Int(required=True, allow_none=False)
+    user_id = fields.UUID(required=True, allow_none=False)
     comments = fields.Nested(CommentSchema, many=True, dump_only=True)
 
 
 class UpdateImageSchema(ImageSchema):
-    annotation_ids = fields.List(fields.Int, required=False, load_only=True)
+    annotation_ids = fields.List(fields.UUID, required=False, load_only=True)
 
 
 class ViewImageSchema(ImageSchema):

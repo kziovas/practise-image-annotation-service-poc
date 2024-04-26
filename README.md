@@ -49,7 +49,7 @@ erDiagram
         id UUID PK
         image_id UUID FK
         comment_summary TEXT
-        sentiments_score INTEGER
+        sentiment_score INTEGER
         created_at DATETIME
         updated_at DATETIME
         deleted_at DATETIME

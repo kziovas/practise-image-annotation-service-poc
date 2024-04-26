@@ -1,6 +1,6 @@
 from sqlalchemy import UUID, Column, String
 
-from app.core_services import db
+from app.services.core_services import db
 from app.models.common import TimestampMixin
 from app.models.image import image_annotation_association
 

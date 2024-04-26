@@ -1,7 +1,9 @@
 from typing import List, Optional
 from uuid import UUID
-from app.core_services import db
-from app.models import Image
+
+from app.models.image import Image
+from app.models.image_summary import ImageSummary
+from app.services.core_services import db
 
 
 class ImageRepo:
@@ -16,11 +18,11 @@ class ImageRepo:
         return cls.model.query.get(image_id)
 
     @classmethod
-    def get_by_user_id(cls, user_id: int) -> List[Image]:
+    def get_by_user_id(cls, user_id: UUID) -> List[Image]:
         return cls.model.query.filter_by(user_id=user_id).all()
 
     @classmethod
-    def create(cls, user_id: int, filename: str) -> Image:
+    def create(cls, user_id: UUID, filename: str) -> Image:
         new_image = Image(user_id=user_id, filename=filename)
         db.session.add(new_image)
         db.session.commit()
@@ -47,7 +49,15 @@ class ImageRepo:
     @classmethod
     def get_by_username(cls, username: str) -> Optional[List[Image]]:
         from app.repos.user import UserRepo  # Importing here to avoid circular imports
+
         user = UserRepo.get_by_username(username)
         if user:
             return cls.model.query.filter_by(user_id=user.id).all()
+        return None
+
+    @classmethod
+    def get_image_summary(cls, image_id: UUID) -> Optional[ImageSummary]:
+        image = cls.get_by_id(image_id)
+        if image:
+            return image.summary.first()
         return None

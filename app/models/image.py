@@ -2,9 +2,9 @@ import os
 
 from sqlalchemy import UUID, Column, Enum, ForeignKey, Integer, String, UniqueConstraint
 
-from app.core_services import db
 from app.enums import AnnotationStatus
 from app.models.common import TimestampMixin
+from app.services.core_services import db
 
 image_annotation_association = db.Table(
     "image_annotation_association",
@@ -18,8 +18,12 @@ class Image(TimestampMixin, db.Model):
     _filename = Column("filename", String(128), nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     _annotation_status = Column(Enum(AnnotationStatus), default=AnnotationStatus.Queued)
-    comments = db.relationship("Comment", backref="image", lazy="dynamic")
-    summary = db.relationship("ImageSummary", backref="image", lazy="dynamic")
+    comments = db.relationship(
+        "Comment", backref="image", lazy="dynamic", cascade="all, delete-orphan"
+    )
+    summary = db.relationship(
+        "ImageSummary", backref="image", lazy="dynamic", cascade="all, delete-orphan"
+    )
     annotations = db.relationship(
         "Annotation", secondary=image_annotation_association, back_populates="images"
     )

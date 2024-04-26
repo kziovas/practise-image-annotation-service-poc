@@ -1,7 +1,8 @@
 from typing import List, Optional
+from uuid import UUID
 
-from app.core_services import db
 from app.models import Annotation
+from app.services.core_services import db
 
 
 class AnnotationRepo:
@@ -12,7 +13,7 @@ class AnnotationRepo:
         return cls.model.query.all()
 
     @classmethod
-    def get_by_id(cls, annotation_id: int) -> Optional[Annotation]:
+    def get_by_id(cls, annotation_id: UUID) -> Optional[Annotation]:
         return cls.model.query.get(annotation_id)
 
     @classmethod
@@ -23,7 +24,7 @@ class AnnotationRepo:
         return new_annotation
 
     @classmethod
-    def update(cls, annotation_id: int, name: str) -> Optional[Annotation]:
+    def update(cls, annotation_id: UUID, name: str) -> Optional[Annotation]:
         annotation = cls.model.query.get(annotation_id)
         if annotation:
             annotation.name = name
@@ -31,7 +32,7 @@ class AnnotationRepo:
         return annotation
 
     @classmethod
-    def delete(cls, annotation_id: int) -> bool:
+    def delete(cls, annotation_id: UUID) -> bool:
         annotation = cls.model.query.get(annotation_id)
         if annotation:
             db.session.delete(annotation)

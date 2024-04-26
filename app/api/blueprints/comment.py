@@ -4,6 +4,7 @@ from app.api.serializers.comment import CommentSchema
 from app.repos.comment import CommentRepo
 from app.repos.image import ImageRepo
 from app.repos.user import UserRepo
+from app.services.image_summary_service import ImageSummaryService
 
 comment_blueprint = Blueprint("comment", __name__)
 comment_schema = CommentSchema()
@@ -42,6 +43,8 @@ def create_comment():
 
     body = data.get("body")
     new_comment = CommentRepo.create(body=body, user_id=user_id, image_id=image_id)
+    ImageSummaryService.update_image_summary(image_id)
+
     return jsonify(comment_schema.dump(new_comment)), 201
 
 
@@ -78,13 +81,20 @@ def update_comment(comment_id):
         return jsonify({"message": "Comment not found"}), 404
 
     updated_comment = CommentRepo.update(comment_id, body)
+    ImageSummaryService.update_image_summary(comment.image_id)
     return jsonify(comment_schema.dump(updated_comment)), 200
 
 
 @comment_blueprint.route("/comment/<uuid:comment_id>", methods=["DELETE"])
 def delete_comment(comment_id):
+    comment = CommentRepo.get_by_id(comment_id)
+    if not comment:
+        return jsonify({"message": "Comment not found"}), 404
+
+    image_id = comment.image_id
     success = CommentRepo.delete(comment_id)
     if success:
+        ImageSummaryService.update_image_summary(image_id)
         return "", 204
     else:
         return jsonify({"message": "Comment not found"}), 404

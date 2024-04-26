@@ -1,6 +1,6 @@
 from sqlalchemy import UUID, Column, ForeignKey, Integer, Text
 
-from app.core_services import db
+from app.services.core_services import db
 from app.models.common import TimestampMixin
 
 

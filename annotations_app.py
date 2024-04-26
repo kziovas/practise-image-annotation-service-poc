@@ -5,12 +5,16 @@ from app.api.blueprints.comment import comment_blueprint
 from app.api.blueprints.image import image_blueprint
 from app.api.blueprints.user import user_blueprint
 from app.config import Config
-from app.core_services import init_core_services
+from app.services.annotation_service import AnnotationService
+from app.services.core_services import init_core_services
+from app.services.image_summary_service import ImageSummaryService
 
 
 def init_app(app: Flask) -> Flask:
     app.config.from_object(Config)
     init_core_services(app)
+    ImageSummaryService.initialize()
+    AnnotationService.initialize()
     return app
 
 
