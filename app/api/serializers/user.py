@@ -8,7 +8,7 @@ class UserSchema(Schema):
     id = fields.UUID(dump_only=True)
     username = fields.Str(required=True)
     email = fields.Email(required=True)
-    password = fields.Str(required=True, load_only=True)
+    password = fields.Str(required=False, load_only=True)
 
 
 class UserLoginSchema(Schema):

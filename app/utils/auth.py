@@ -58,7 +58,7 @@ class AuthUtils:
                     return fn(*args, **kwargs)
             return jsonify({"error": "Unauthorized"}), 401
 
-        return
+        return wrapper
 
     @classmethod
     def inject_requesting_user(cls, fn):

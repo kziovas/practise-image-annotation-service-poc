@@ -10,6 +10,7 @@ class ImageSchema(Schema):
     user_id = fields.UUID(required=True, allow_none=False)
     comments = fields.Nested(CommentSchema, many=True, dump_only=True)
     annotation_ids = fields.List(fields.UUID, required=False)
+    is_public = fields.Boolean(required=True)
 
 
 class ViewImageSchema(ImageSchema):

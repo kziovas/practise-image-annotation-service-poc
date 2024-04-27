@@ -47,12 +47,11 @@ def create_comment(requesting_user: User):
         return jsonify({"message": "User not found"}), 404
 
     image_id = data.get("image_id")
-    image = ImageRepo.get_by_id(image_id)
+    image = ImageRepo.get_by_id(image_id, requesting_user_id=requesting_user.id)
     if not image:
         return jsonify({"message": "Image not found"}), 404
-
     if not (
-        (requesting_user.id == user_id == image.user_id)
+        (str(requesting_user.id) == user_id)
         or str(requesting_user.username) == Config.ADMIN_USERNAME
     ):
         return jsonify({"error": "Unauthorized"}), 401
@@ -81,13 +80,6 @@ def get_comments_by_user_id(user_id):
 def get_comments_by_image_id(image_id, requesting_user: User):
     image_comments = CommentRepo.get_by_image_id(image_id)
     if image_comments:
-        user_id = image_comments[0].user_id
-        if not (
-            str(requesting_user.id) == user_id
-            or str(requesting_user.username) == Config.ADMIN_USERNAME
-        ):
-            return jsonify({"error": "Unauthorized"}), 401
-
         return jsonify(comment_schema.dump(image_comments, many=True)), 200
     else:
         return jsonify({"message": "No comments found for the image"}), 404

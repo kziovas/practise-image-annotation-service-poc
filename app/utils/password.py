@@ -7,24 +7,24 @@ from app.errors import SecretKeyNotFoundError
 
 
 class PasswordUtils:
-    _app_config = None
+    _app_config = {}
 
     @classmethod
     def initialize(cls, app: Flask) -> None:
         """Initialize the PasswordUtils class with the Flask app instance."""
         cls._app_config = app.config
 
-    @staticmethod
-    def _get_secret_key() -> Optional[str]:
-       """Retrieve the secret key from the Flask app config.
+    @classmethod
+    def _get_secret_key(cls) -> Optional[str]:
+        """Retrieve the secret key from the Flask app config.
 
         Returns:
             Optional[str]: The secret key if found, or None if not found.
         """
         return PasswordUtils._app_config.get("SECRET_KEY")
 
-    @staticmethod
-    def hash_password(password: str) -> str:
+    @classmethod
+    def hash_password(cls, password: str) -> str:
         """Hashes the given password using the secret key.
 
         Args:

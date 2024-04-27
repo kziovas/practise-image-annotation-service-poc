@@ -33,9 +33,9 @@ class AnnotationService:
                 raise e
 
     @classmethod
-    def simulate_annotation(cls, image_id: UUID) -> None:
+    def simulate_annotation(cls, image_id: UUID, requesting_user_id: UUID) -> None:
         try:
-            image = ImageRepo.get_by_id(image_id)
+            image = ImageRepo.get_by_id(image_id, requesting_user_id)
             if not image:
                 raise ImageNotFound("Image not found")
             if image.annotation_status == AnnotationStatus.Queued.value:

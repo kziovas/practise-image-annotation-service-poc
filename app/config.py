@@ -11,7 +11,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY") or "jwt_secret_key"
-    JWT_EXPIRATION_DELTA = timedelta(minutes=10)
+    JWT_EXPIRATION_DELTA = timedelta(minutes=60)
 
     ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME") or "admin"
     ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD") or "password"
+
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "../uploads")

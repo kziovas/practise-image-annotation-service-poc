@@ -19,6 +19,7 @@ def login():
 
     login_data = request.json
     try:
+        user_login_schema.context = {"username": login_data.get("username")}
         validated_login_data = user_login_schema.load(login_data)
     except ValidationError as err:
         return jsonify(err.messages), 400

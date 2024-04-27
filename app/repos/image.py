@@ -1,7 +1,8 @@
 from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy import and_, not_, or_
+from sqlalchemy import and_, or_
+from werkzeug.utils import secure_filename
 
 from app.models.image import Image
 from app.models.image_summary import ImageSummary
@@ -18,14 +19,19 @@ class ImageRepo:
     @classmethod
     def get_all_allowed(cls, requesting_user_id: UUID) -> List[Image]:
         return cls.model.query.filter(
-            or_(cls.model.is_public, cls.model.user_id == requesting_user_id)
+            or_(cls.model._is_public.is_(True), cls.model.user_id == requesting_user_id)
         ).all()
 
     @classmethod
     def get_by_id(cls, image_id: UUID, requesting_user_id: UUID) -> Optional[Image]:
         return cls.model.query.filter(
-            or_(cls.model.is_public, cls.model.user_id == requesting_user_id),
-            cls.model.id == image_id,
+            and_(
+                or_(
+                    cls.model._is_public.is_(True),
+                    cls.model.user_id == requesting_user_id,
+                ),
+                cls.model.id == image_id,
+            )
         ).first()
 
     @classmethod
@@ -39,6 +45,7 @@ class ImageRepo:
 
     @classmethod
     def create(cls, user_id: UUID, filename: str, **kwargs) -> Image:
+        filename = secure_filename(filename)
         new_image = Image(user_id=user_id, filename=filename, **kwargs)
         db.session.add(new_image)
         db.session.commit()
@@ -49,6 +56,8 @@ class ImageRepo:
         image = cls.model.query.get(image_id)
         if image:
             for key, value in kwargs.items():
+                if key == "filename":
+                    value = secure_filename(value)
                 setattr(image, key, value)
             db.session.commit()
 

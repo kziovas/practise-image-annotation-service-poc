@@ -8,6 +8,8 @@ from app.config import Config
 from app.services.annotation_service import AnnotationService
 from app.services.core_services import init_core_services
 from app.services.image_summary_service import ImageSummaryService
+from app.utils.auth import AuthUtils
+from app.utils.password import PasswordUtils
 
 
 def init_app(app: Flask) -> Flask:
@@ -15,6 +17,8 @@ def init_app(app: Flask) -> Flask:
     init_core_services(app)
     ImageSummaryService.initialize(app)
     AnnotationService.initialize(app)
+    PasswordUtils.initialize(app)
+    AuthUtils.initialize(app)
     return app
 
 
