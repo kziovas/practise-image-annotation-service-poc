@@ -1,9 +1,8 @@
 from uuid import UUID
 
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from marshmallow.exceptions import ValidationError
-from werkzeug.utils import secure_filename
 
 from app.api.serializers.comment import CommentSchema
 from app.api.serializers.image import ImageSchema, ViewImageSchema
@@ -28,6 +27,35 @@ image_summary_schema = ImageSummarySchema()
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def upload_image(requesting_user: User):
+    """
+    Upload a new image.
+
+    ---
+    parameters:
+      - name: file
+        in: formData
+        type: file
+        required: true
+        description: The image file to upload
+      - name: user_id
+        in: formData
+        type: string
+        required: true
+        description: ID of the user uploading the image
+    responses:
+      201:
+        description: Image uploaded successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewImageSchema'
+      400:
+        description: Bad request - No image file provided or validation error
+      401:
+        description: Unauthorized - Only the owner of the image can upload it
+      500:
+        description: Internal Server Error - Failed to save the image
+    """
     uploaded_file = request.files.get("file")
     if not uploaded_file:
         return jsonify({"message": "No image file provided"}), 400
@@ -55,6 +83,20 @@ def upload_image(requesting_user: User):
 @jwt_required()
 @AuthUtils.admin_required
 def get_all_images():
+    """
+    Get all images.
+
+    ---
+    responses:
+      200:
+        description: List of all images
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ViewImageSchema'
+    """
     images = ImageRepo.get_all()
     return jsonify(view_image_schema.dump(images, many=True)), 200
 
@@ -63,6 +105,20 @@ def get_all_images():
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def get_all_allowed_images(requesting_user: User):
+    """
+    Get all images allowed for the requesting user.
+
+    ---
+    responses:
+      200:
+        description: List of all images allowed for the requesting user
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ViewImageSchema'
+    """
     images = ImageRepo.get_all_allowed(requesting_user_id=requesting_user.id)
     return jsonify(view_image_schema.dump(images, many=True)), 200
 
@@ -71,6 +127,28 @@ def get_all_allowed_images(requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def get_image(image_id, requesting_user: User):
+    """
+    Get a specific image by ID.
+
+    ---
+    parameters:
+      - name: image_id
+        in: path
+        description: ID of the image to retrieve
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Image details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewImageSchema'
+      404:
+        description: Image not found
+    """
     image = ImageRepo.get_by_id(
         image_id=image_id, requesting_user_id=UUID(str(requesting_user.id))
     )
@@ -87,6 +165,30 @@ def get_image(image_id, requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def get_images_by_user_id(user_id, requesting_user: User):
+    """
+    Get all images belonging to a specific user by ID.
+
+    ---
+    parameters:
+      - name: user_id
+        in: path
+        description: ID of the user to retrieve images for
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: List of images belonging to the user
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ViewImageSchema'
+      404:
+        description: No images found for the user
+    """
 
     user_images = ImageRepo.get_by_user_id(
         owner_id=user_id, requesting_user_id=UUID(str(requesting_user.id))
@@ -102,6 +204,29 @@ def get_images_by_user_id(user_id, requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def get_images_by_username(username: str, requesting_user: User):
+    """
+    Get all images belonging to a specific user by username.
+
+    ---
+    parameters:
+      - name: username
+        in: path
+        description: Username of the user to retrieve images for
+        required: true
+        schema:
+          type: string
+    responses:
+      200:
+        description: List of images belonging to the user
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ViewImageSchema'
+      404:
+        description: User not found or no images found for the user
+    """
     owner_user = UserRepo.get_by_username(username)
     if not owner_user:
         return jsonify({"message": "User not found"}), 404
@@ -117,6 +242,28 @@ def get_images_by_username(username: str, requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def get_image_summary(image_id, requesting_user: User):
+    """
+    Get summary information for a specific image by ID.
+
+    ---
+    parameters:
+      - name: image_id
+        in: path
+        description: ID of the image to retrieve summary for
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Image summary information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageSummarySchema'
+      404:
+        description: Image summary not found
+    """
     image = ImageRepo.get_by_id(
         image_id=image_id, requesting_user_id=UUID(str(requesting_user.id))
     )
@@ -134,6 +281,28 @@ def get_image_summary(image_id, requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def create_image(requesting_user: User):
+    """
+    Create a new image.
+
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/components/schemas/ImageSchema'
+    responses:
+      201:
+        description: Image created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewImageSchema'
+      400:
+        description: Bad request - No image data provided or validation error
+      401:
+        description: Unauthorized - Only the owner of the image can create it
+    """
     data = request.json
     if not data:
         return jsonify({"message": "No image data provided"}), 400
@@ -161,6 +330,37 @@ def create_image(requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def update_image(image_id, requesting_user: User):
+    """
+    Update an existing image.
+
+    ---
+    parameters:
+      - name: image_id
+        in: path
+        description: ID of the image to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/components/schemas/ImageSchema'
+    responses:
+      200:
+        description: Image updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewImageSchema'
+      400:
+        description: Bad request - No image data provided or validation error
+      401:
+        description: Unauthorized - Only the owner of the image or admin can update it
+      404:
+        description: Image not found
+    """
     data = request.json
     if not data:
         return jsonify({"message": "No image data provided"}), 400
@@ -211,6 +411,26 @@ def update_image(image_id, requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def delete_image(image_id, requesting_user: User):
+    """
+    Delete an existing image.
+
+    ---
+    parameters:
+      - name: image_id
+        in: path
+        description: ID of the image to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      204:
+        description: Image deleted successfully
+      401:
+        description: Unauthorized - Only the owner of the image or admin can delete it
+      404:
+        description: Image not found
+    """
     image = ImageRepo.get_by_id(
         image_id=image_id, requesting_user_id=requesting_user.id
     )

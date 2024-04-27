@@ -14,6 +14,44 @@ user_login_schema = UserLoginSchema()
 
 @user_blueprint.route("/user/login", methods=["POST"])
 def login():
+    """
+    Authenticate a user and generate an access token.
+
+    ---
+    parameters:
+      - name: Content-Type
+        in: header
+        required: true
+        description: Content type header
+        schema:
+        type: string
+        default: application/json
+      - name: body
+        in: body
+        required: true
+        description: JSON object containing username and password
+        schema:
+          type: object
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+    responses:
+      200:
+        description: Authentication successful, returns access token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                access_token:
+                  type: string
+      400:
+        description: Bad request - Request body must be JSON or validation error
+      401:
+        description: Unauthorized - Invalid username or password
+    """
     if not request.json:
         return jsonify({"error": "Request body must be JSON"}), 400
 
@@ -39,6 +77,20 @@ def login():
 @jwt_required()
 @AuthUtils.admin_required
 def get_users():
+    """
+    Get all users.
+
+    ---
+    responses:
+      200:
+        description: List of users
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserSchema'
+    """
     users = UserRepo.get_all()
     return jsonify(user_schema.dump(users, many=True)), 200
 
@@ -47,6 +99,28 @@ def get_users():
 @jwt_required()
 @AuthUtils.admin_required
 def get_user_by_id(user_id):
+    """
+    Get a user by ID.
+
+    ---
+    parameters:
+      - name: user_id
+        in: path
+        description: ID of the user to retrieve
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: User details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSchema'
+      404:
+        description: User not found
+    """
     user = UserRepo.get_by_id(user_id=user_id)
     if user:
         return jsonify(user_schema.dump(user)), 200
@@ -57,6 +131,20 @@ def get_user_by_id(user_id):
 @user_blueprint.route("/user", methods=["GET"])
 @jwt_required()
 def get_user():
+    """
+    Get current user details.
+
+    ---
+    responses:
+      200:
+        description: Current user details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSchema'
+      404:
+        description: User not found
+    """
     username = get_jwt_identity()
     user = UserRepo.get_by_username(username)
     if user:
@@ -68,6 +156,27 @@ def get_user():
 @user_blueprint.route("/user/email/<string:email>", methods=["GET"])
 @jwt_required()
 def get_user_by_email(email):
+    """
+    Get a user by email.
+
+    ---
+    parameters:
+      - name: email
+        in: path
+        description: Email of the user to retrieve
+        required: true
+        schema:
+          type: string
+    responses:
+      200:
+        description: User details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSchema'
+      404:
+        description: User not found or unauthorized
+    """
     requesting_username = get_jwt_identity()
     user = UserRepo.get_by_email(email)
     if user and (
@@ -81,6 +190,27 @@ def get_user_by_email(email):
 
 @user_blueprint.route("/user", methods=["POST"])
 def create_user():
+    """
+    Create a new user.
+
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        description: JSON object containing user details
+        schema:
+          $ref: '#/components/schemas/UserSchema'
+    responses:
+      201:
+        description: User created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSchema'
+      400:
+        description: Bad request - No user data provided or validation error
+    """
     data = request.json
     if not data:
         return jsonify({"message": "No user data provided"}), 400
@@ -100,6 +230,36 @@ def create_user():
 @jwt_required()
 @AuthUtils.is_bearer_or_admin
 def update_user(user_id):
+    """
+    Update an existing user.
+
+    ---
+    parameters:
+      - name: user_id
+        in: path
+        description: ID of the user to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: body
+        in: body
+        required: true
+        description: JSON object containing user details
+        schema:
+          $ref: '#/components/schemas/UserSchema'
+    responses:
+      200:
+        description: User updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSchema'
+      400:
+        description: Bad request - No user data provided or validation error
+      404:
+        description: User not found
+    """
     user = UserRepo.get_by_id(user_id)
     if not user:
         return jsonify({"message": "User not found"}), 404
@@ -123,6 +283,24 @@ def update_user(user_id):
 @jwt_required()
 @AuthUtils.is_bearer_or_admin
 def delete_user(user_id):
+    """
+    Delete a user.
+
+    ---
+    parameters:
+      - name: user_id
+        in: path
+        description: ID of the user to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      204:
+        description: User deleted successfully
+      404:
+        description: User not found
+    """
     user = UserRepo.get_by_id(user_id)
     if not user:
         return jsonify({"message": "User not found"}), 404

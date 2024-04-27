@@ -18,6 +18,20 @@ comment_schema = CommentSchema()
 @jwt_required()
 @AuthUtils.admin_required
 def get_comments():
+    """
+    Get all comments.
+
+    ---
+    responses:
+      200:
+        description: List of comments
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CommentSchema'
+    """
     comments = CommentRepo.get_all()
     return jsonify(comment_schema.dump(comments, many=True)), 200
 
@@ -26,6 +40,28 @@ def get_comments():
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def get_comment(comment_id, requesting_user: User):
+    """
+    Get a specific comment by ID.
+
+    ---
+    parameters:
+      - name: comment_id
+        in: path
+        description: ID of the comment to retrieve
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Comment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentSchema'
+      404:
+        description: Comment not found
+    """
     comment = CommentRepo.get_by_id(comment_id)
     if comment:
         return jsonify(comment_schema.dump(comment)), 200
@@ -37,6 +73,33 @@ def get_comment(comment_id, requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def create_comment(requesting_user: User):
+    """
+    Create a new comment.
+
+    ---
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommentSchema'
+    responses:
+      201:
+        description: Created comment
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentSchema'
+      400:
+        description: Invalid request data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+    """
     data = request.json
     if not data:
         return jsonify({"message": "No comment data provided"}), 400
@@ -67,6 +130,30 @@ def create_comment(requesting_user: User):
 @jwt_required()
 @AuthUtils.is_bearer_or_admin
 def get_comments_by_user_id(user_id):
+    """
+    Get all comments by user ID.
+
+    ---
+    parameters:
+      - name: user_id
+        in: path
+        description: ID of the user whose comments to retrieve
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: List of comments by user
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CommentSchema'
+      404:
+        description: No comments found for the user
+    """
     user_comments = CommentRepo.get_by_user_id(user_id)
     if user_comments:
         return jsonify(comment_schema.dump(user_comments, many=True)), 200
@@ -78,6 +165,30 @@ def get_comments_by_user_id(user_id):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def get_comments_by_image_id(image_id, requesting_user: User):
+    """
+    Get all comments for an image by image ID.
+
+    ---
+    parameters:
+      - name: image_id
+        in: path
+        description: ID of the image whose comments to retrieve
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: List of comments for the image
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CommentSchema'
+      404:
+        description: No comments found for the image
+    """
     image_comments = CommentRepo.get_by_image_id(image_id)
     if image_comments:
         return jsonify(comment_schema.dump(image_comments, many=True)), 200
@@ -89,6 +200,43 @@ def get_comments_by_image_id(image_id, requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def update_comment(comment_id, requesting_user: User):
+    """
+    Update an existing comment.
+
+    ---
+    parameters:
+      - name: comment_id
+        in: path
+        description: ID of the comment to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommentSchema'
+    responses:
+      200:
+        description: Updated comment
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentSchema'
+      400:
+        description: Invalid request data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      404:
+        description: Comment not found
+    """
     data = request.json
     if not data:
         return jsonify({"message": "No comment data provided"}), 400
@@ -115,6 +263,26 @@ def update_comment(comment_id, requesting_user: User):
 @jwt_required()
 @AuthUtils.inject_requesting_user
 def delete_comment(comment_id, requesting_user: User):
+    """
+    Delete an existing comment.
+
+    ---
+    parameters:
+      - name: comment_id
+        in: path
+        description: ID of the comment to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      204:
+        description: Comment deleted successfully
+      404:
+        description: Comment not found
+      401:
+        description: Unauthorized - Only the owner of the comment or admin can delete it
+    """
     comment = CommentRepo.get_by_id(comment_id)
     if not comment:
         return jsonify({"message": "Comment not found"}), 404
