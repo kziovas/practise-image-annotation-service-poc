@@ -84,38 +84,37 @@ http://localhost:5000/apidocs/
 ## Tools and Frameworks
 
 ### Flask
-Flask is a lightweight WSGI web application framework in Python, offering tools, libraries, and patterns for building scalable web applications.
+[Flask](https://flask.palletsprojects.com/en/2.1.x/) is a lightweight WSGI web application framework in Python, offering tools, libraries, and patterns for building scalable web applications.
 
 ### ORM - SQLAlchemy
-SQLAlchemy is an open-source SQL toolkit and Object-Relational Mapping (ORM) library for Python. It provides a comprehensive suite of enterprise-level persistence patterns and an efficient SQL expression language.
+[SQLAlchemy](https://www.sqlalchemy.org/) is an open-source SQL toolkit and Object-Relational Mapping (ORM) library for Python. It provides a comprehensive suite of enterprise-level persistence patterns and an efficient SQL expression language.
 
 ### JSON Web Tokens (JWT)
 JSON Web Tokens (JWT) are utilized for authentication and authorization purposes in the application. Custom decorators encapsulate JWT processing logic, enhancing code readability and maintainability by separating authentication concerns from endpoint implementations.
 
 ### Serialization and Validation - Marshmallow
-Marshmallow is employed for data serialization, validation, and security. It ensures proper formatting, validation, and sanitization of data exchanged between the application and clients, enhancing robustness and security.
+[Marshmallow](https://marshmallow.readthedocs.io/en/stable/) is employed for data serialization, validation, and security. It ensures proper formatting, validation, and sanitization of data exchanged between the application and clients, enhancing robustness and security.
 
 ### Database - PostgreSQL
-PostgreSQL is a powerful open-source object-relational database system known for its reliability, robustness, and support for advanced features such as multi-version concurrency control (MVCC) and table inheritance.
+[PostgreSQL](https://www.postgresql.org/) is a powerful open-source object-relational database system known for its reliability, robustness, and support for advanced features such as multi-version concurrency control (MVCC) and table inheritance.
 
 ### Containerization and Orchestration - Docker and Docker Compose
-Docker and Docker Compose simplify deployment and orchestration by containerizing the Flask application and PostgreSQL database. The Docker Compose file automates the setup of the entire system, streamlining deployment and ensuring convenient orchestration of services.
+[Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) simplify deployment and orchestration by containerizing the Flask application and PostgreSQL database. The Docker Compose file automates the setup of the entire system, streamlining deployment and ensuring convenient orchestration of services.
 
 ### Migrations - Alembic
-Alembic is used for database migrations in conjunction with SQLAlchemy, facilitating the creation and management of database schema changes over time.
+[Alembic](https://alembic.sqlalchemy.org/en/latest/) is used for database migrations in conjunction with SQLAlchemy, facilitating the creation and management of database schema changes over time.
 
 ### Natural Language Processing - NLTK and TextBlob
-NLTK and TextBlob are Python libraries for natural language processing tasks such as tokenization, part-of-speech tagging, sentiment analysis, and more, enhancing the application's text processing capabilities.
+[NLTK](https://www.nltk.org/) and [TextBlob](https://textblob.readthedocs.io/en/dev/) are Python libraries for natural language processing tasks such as tokenization, part-of-speech tagging, sentiment analysis, and more, enhancing the application's text processing capabilities.
 
 ### Automated Testing - Pytest
-Pytest is a powerful Python testing tool used for writing and executing automated tests. It promotes test-driven development practices, ensuring the reliability and quality of the application's codebase.
+[Pytest](https://docs.pytest.org/en/stable/) is a powerful Python testing tool used for writing and executing automated tests. It promotes test-driven development practices, ensuring the reliability and quality of the application's codebase.
 
 ### Diagrams - Mermaid
-Mermaid, a Markdown-like script language, was utilized for creating the Entity Relationship Diagram (ERD). Mermaid offers a simple syntax for generating diagrams directly within Markdown documents, facilitating the visualization of complex data structures and relationships with ease.
+[Mermaid](https://mermaid-js.github.io/mermaid/#/), a Markdown-like script language, was utilized for creating the Entity Relationship Diagram (ERD). Mermaid offers a simple syntax for generating diagrams directly within Markdown documents, facilitating the visualization of complex data structures and relationships with ease.
 
 ### Documentation - Swagger
-Swagger has been integrated into the application to provide a comprehensive documentation of the available endpoints and their functionalities. It allows developers to visualize, interact with, and test the API endpoints directly from the Swagger UI. This facilitates better understanding and utilization of the API, enhancing the overall development and testing process.
-
+[Swagger](https://swagger.io/) has been integrated into the application to provide a comprehensive documentation of the available endpoints and their functionalities. It allows developers to visualize, interact with, and test the API endpoints directly from the Swagger UI. This facilitates better understanding and utilization of the API, enhancing the overall development and testing process.
 
 
 
