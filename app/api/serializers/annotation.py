@@ -19,3 +19,19 @@ class AnnotationSchema(Schema):
                 obj.image_ids = [image.id for image in obj.images]
                 delattr(obj, "images")
         return super().dump(obj, many=many, **kwargs)
+
+    def load(self, data, *, many=None, **kwargs):
+        if many:
+            for item in data:
+                if "image_ids" in item:
+                    image_ids = item.pop("image_ids")
+                    item["images"] = [
+                        ImageRepo.get_by_id(image_id) for image_id in image_ids
+                    ]
+        else:
+            if "image_ids" in data:
+                image_ids = data.pop("image_ids")
+                data["images"] = [
+                    ImageRepo.get_by_id(image_id) for image_id in image_ids
+                ]
+        return super().load(data, many=many, **kwargs)

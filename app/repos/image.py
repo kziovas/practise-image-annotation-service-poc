@@ -1,6 +1,8 @@
 from typing import List, Optional
 from uuid import UUID
 
+from sqlalchemy import and_, not_, or_
+
 from app.models.image import Image
 from app.models.image_summary import ImageSummary
 from app.services.core_services import db
@@ -14,12 +16,26 @@ class ImageRepo:
         return cls.model.query.all()
 
     @classmethod
-    def get_by_id(cls, image_id: UUID) -> Optional[Image]:
-        return cls.model.query.get(image_id)
+    def get_all_allowed(cls, requesting_user_id: UUID) -> List[Image]:
+        return cls.model.query.filter(
+            or_(cls.model.is_public, cls.model.user_id == requesting_user_id)
+        ).all()
 
     @classmethod
-    def get_by_user_id(cls, user_id: UUID) -> List[Image]:
-        return cls.model.query.filter_by(user_id=user_id).all()
+    def get_by_id(cls, image_id: UUID, requesting_user_id: UUID) -> Optional[Image]:
+        return cls.model.query.filter(
+            or_(cls.model.is_public, cls.model.user_id == requesting_user_id),
+            cls.model.id == image_id,
+        ).first()
+
+    @classmethod
+    def get_by_user_id(cls, owner_id: UUID, requesting_user_id: UUID) -> List[Image]:
+        if owner_id == requesting_user_id:
+            return cls.model.query.filter(cls.model.user_id == owner_id).all()
+        else:
+            return cls.model.query.filter(
+                cls.model.is_public, cls.model.user_id == owner_id
+            ).all()
 
     @classmethod
     def create(cls, user_id: UUID, filename: str, **kwargs) -> Image:
@@ -48,12 +64,19 @@ class ImageRepo:
         return False
 
     @classmethod
-    def get_by_username(cls, username: str) -> Optional[List[Image]]:
+    def get_by_username(
+        cls, username: str, requesting_user_id: UUID
+    ) -> Optional[List[Image]]:
         from app.repos.user import UserRepo  # Importing here to avoid circular imports
 
         user = UserRepo.get_by_username(username)
         if user:
-            return cls.model.query.filter_by(user_id=user.id).all()
+            if user.id == requesting_user_id:
+                return cls.model.query.filter_by(user_id=user.id).all()
+            else:
+                return cls.model.query.filter(
+                    cls.model.is_public, cls.model.user_id == user.id
+                ).all()
         return None
 
     @classmethod

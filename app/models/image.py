@@ -1,7 +1,7 @@
 import os
 import uuid
 
-from sqlalchemy import UUID, Column, Enum, ForeignKey, String, UniqueConstraint
+from sqlalchemy import UUID, Boolean, Column, Enum, ForeignKey, String, UniqueConstraint
 
 from app.enums import AnnotationStatus
 from app.models.common import TimestampMixin
@@ -24,6 +24,7 @@ class Image(TimestampMixin, db.Model):
     _filename = Column("filename", String(128), nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
     _annotation_status = Column(Enum(AnnotationStatus), default=AnnotationStatus.Queued)
+    _is_public = Column("is_public", Boolean, default=False)
     comments = db.relationship(
         "Comment", backref="image", lazy="dynamic", cascade="all, delete-orphan"
     )
@@ -40,6 +41,14 @@ class Image(TimestampMixin, db.Model):
 
     def __repr__(self):
         return f"<Image {self._filename}>"
+
+    @property
+    def is_public(self):
+        return self._is_public
+
+    @is_public.setter
+    def is_public(self, value):
+        self._is_public = value
 
     @property
     def filename(self):

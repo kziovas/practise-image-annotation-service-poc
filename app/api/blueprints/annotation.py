@@ -1,19 +1,23 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 
 from app.api.serializers.annotation import AnnotationSchema
 from app.repos.annotation import AnnotationRepo
+from app.utils.auth import AuthUtils
 
 annotation_blueprint = Blueprint("annotation", __name__)
 annotation_schema = AnnotationSchema()
 
 
 @annotation_blueprint.route("/annotation", methods=["GET"])
+@jwt_required()
 def get_annotations():
     annotations = AnnotationRepo.get_all()
     return jsonify(annotation_schema.dump(annotations, many=True)), 200
 
 
 @annotation_blueprint.route("/annotation/<uuid:annotation_id>", methods=["GET"])
+@jwt_required()
 def get_annotation(annotation_id):
     annotation = AnnotationRepo.get_by_id(annotation_id)
     if annotation:
@@ -23,6 +27,8 @@ def get_annotation(annotation_id):
 
 
 @annotation_blueprint.route("/annotation", methods=["POST"])
+@jwt_required()
+@AuthUtils.admin_required
 def create_annotation():
     data = request.json
     if not data:
@@ -36,6 +42,8 @@ def create_annotation():
 
 
 @annotation_blueprint.route("/annotation/<uuid:annotation_id>", methods=["PUT"])
+@jwt_required()
+@AuthUtils.admin_required
 def update_annotation(annotation_id):
     data = request.json
     if not data:
@@ -53,6 +61,8 @@ def update_annotation(annotation_id):
 
 
 @annotation_blueprint.route("/annotation/<uuid:annotation_id>", methods=["DELETE"])
+@jwt_required()
+@AuthUtils.admin_required
 def delete_annotation(annotation_id):
     success = AnnotationRepo.delete(annotation_id)
     if success:

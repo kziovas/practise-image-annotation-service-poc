@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields
 
-from app.api.serializers.annotation import AnnotationSchema
 from app.api.serializers.comment import CommentSchema
+from app.repos.annotation import AnnotationRepo
 
 
 class ImageSchema(Schema):
@@ -28,3 +28,21 @@ class ViewImageSchema(ImageSchema):
                 obj.annotation_ids = [annotation.id for annotation in obj.annotations]
                 delattr(obj, "annotations")
         return super().dump(obj, many=many, **kwargs)
+
+    def load(self, data, *, many=None, **kwargs):
+        if many:
+            for item in data:
+                if "annotation_ids" in item:
+                    annotation_ids = item.pop("annotation_ids")
+                    item["annotations"] = [
+                        AnnotationRepo.get_by_id(annotation_id)
+                        for annotation_id in annotation_ids
+                    ]
+        else:
+            if "annotation_ids" in data:
+                annotation_ids = data.pop("annotation_ids")
+                data["annotations"] = [
+                    AnnotationRepo.get_by_id(annotation_id)
+                    for annotation_id in annotation_ids
+                ]
+        return super().load(data, many=many, **kwargs)
