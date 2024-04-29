@@ -89,8 +89,10 @@ class ImageRepo:
         return None
 
     @classmethod
-    def get_image_summary(cls, image_id: UUID) -> Optional[ImageSummary]:
-        image = cls.get_by_id(image_id)
+    def get_image_summary(
+        cls, image_id: UUID, requesting_user_id: UUID
+    ) -> Optional[ImageSummary]:
+        image = cls.get_by_id(image_id, requesting_user_id)
         if image:
             return image.summary.first()
         return None

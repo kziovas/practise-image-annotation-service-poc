@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
@@ -110,7 +112,9 @@ def create_comment(requesting_user: User):
         return jsonify({"message": "User not found"}), 404
 
     image_id = data.get("image_id")
-    image = ImageRepo.get_by_id(image_id, requesting_user_id=requesting_user.id)
+    image = ImageRepo.get_by_id(
+        image_id, requesting_user_id=UUID(str(requesting_user.id))
+    )
     if not image:
         return jsonify({"message": "Image not found"}), 404
     if not (
@@ -121,6 +125,7 @@ def create_comment(requesting_user: User):
 
     body = data.get("body")
     new_comment = CommentRepo.create(body=body, user_id=user_id, image_id=image_id)
+    breakpoint()
     ImageSummaryService.update_image_summary(image_id)
 
     return jsonify(comment_schema.dump(new_comment)), 201

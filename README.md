@@ -158,6 +158,28 @@ docker-compose up
 
 7. Once the setup is complete, you can start using the endpoints or visit the Swagger documentation page to explore the available endpoints and their functionalities.
 
+### Accessing the Application
+
+To perform any action on the application, you need to obtain a token by visiting the following endpoint:
+
+```plaintext
+http://127.0.0.1:5000/user/login
+```
+Provide the following credentials to obtain a bearer token:
+```plaintext
+username: admin
+password: password
+```
+After providing the credentials, you will receive a bearer token, which you must use in all your requests to authenticate.
+For example to use the token with Postman, follow these steps:
+
+1. Open Postman and create a new request for the desired endpoint of the Flask application.
+2. In the request headers, add an authorization header with the value "Bearer <token>", replacing "<token>" with the token obtained from the previous step.
+3. Send the request to the Flask application endpoint. The application will authenticate the request using the provided token and respond accordingly.
+
+For more information on how to use Postman, you can visit the [Postman website](https://www.postman.com/).
+
+
 ## Continuous Integration (CI)
 
 ### GitHub Pipeline

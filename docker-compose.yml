@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: image_annotation_db 
+    ports:
+      - "5433:5432"  # 5433 is not the standard port for PostgreSQL to avoid conflict with existing image on users machine
+
+  annotations_app:
+    build:
+      context: .
+    environment:
+      FLASK_APP: "annotations_app.py"
+      DATABASE_URL: "postgresql://admin:password@postgres:5432/image_annotation_db"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres

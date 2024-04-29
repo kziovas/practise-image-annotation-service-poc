@@ -270,7 +270,9 @@ def get_image_summary(image_id, requesting_user: User):
     if not image:
         return jsonify({"message": "Image not found"}), 404
 
-    image_summary = ImageRepo.get_image_summary(image_id)
+    image_summary = ImageRepo.get_image_summary(
+        image_id, requesting_user_id=UUID(str(requesting_user.id))
+    )
     if image_summary and (UUID(str(image.user_id)) == UUID(str(requesting_user.id))):
         return jsonify(image_summary_schema.dump(image_summary)), 200
     else:

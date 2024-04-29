@@ -23,6 +23,7 @@ class ImageSummaryService:
         # Get all comments for the image
         comments = CommentRepo.get_by_image_id(image_id)
         comment_count = len(comments)
+        breakpoint()
         if comment_count == 0:
             average_comment_length = 0
             users_commented_count = 0
@@ -37,8 +38,10 @@ class ImageSummaryService:
         sentiment_score = ImageSummaryService.calculate_sentiment(comment_text)
 
         existing_image_summary = ImageSummaryRepo.get_by_image_id(image_id)
+        breakpoint()
 
         if existing_image_summary:
+            breakpoint()
             ImageSummaryRepo.update(
                 summary_id=existing_image_summary.id,
                 comment_summary=comment_summary,
@@ -49,6 +52,7 @@ class ImageSummaryService:
             )
 
         else:
+            breakpoint()
             ImageSummaryRepo.create(
                 image_id=image_id,
                 comment_summary=comment_summary,
