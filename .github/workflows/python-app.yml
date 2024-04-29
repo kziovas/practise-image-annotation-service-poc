@@ -32,7 +32,7 @@ jobs:
       - name: Check if Docker Compose is installed
         run: docker-compose --version
 
-      - name: Build and run Docker Compose
+      - name: Build and run Tests with Docker Compose
         run: |
           docker-compose -f docker-compose.yml up -d
           docker-compose -f docker-compose.yml exec annotations_app pytest tests/
