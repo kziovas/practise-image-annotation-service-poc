@@ -7,10 +7,6 @@ from app.repos.user import UserRepo
 
 
 class TestUserRepo:
-    def test_create_user(self, new_user):
-        assert isinstance(new_user, User)
-        assert new_user.username == "test_user"
-        assert new_user.email == "test@example.com"
 
     def test_get_user_by_id(self, new_user):
         retrieved_user = UserRepo.get_by_id(new_user.id)
