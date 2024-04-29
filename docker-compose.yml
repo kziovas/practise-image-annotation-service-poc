@@ -9,7 +9,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: image_annotation_db 
     ports:
-      - "5433:5432"  # 5433 is not the standard port for PostgreSQL to avoid conflict with existing image on users machine
+      - "5432:5432" 
 
   annotations_app:
     build:
