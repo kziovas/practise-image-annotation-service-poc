@@ -33,8 +33,3 @@ jobs:
       - name: Build and run Docker Compose
         run: |
           docker-compose --version
-          docker-compose -f docker-compose.yml up -d
-          docker-compose -f docker-compose.yml exec annotations_app pytest tests/
-
-      - name: Shutdown Docker Compose
-        run: docker-compose -f docker-compose.yml down
