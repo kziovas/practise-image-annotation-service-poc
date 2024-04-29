@@ -1,6 +1,8 @@
 # practise-image-annotation-service-poc
 This is a Proof of Concept (PoC) Flask application of an “Image Annotation Service” where users can perform all the basic actions in order to upload an image and have it annotated.
 
+[![Image Annotation App CI](https://github.com/kziovas/practise-image-annotation-service-poc/actions/workflows/python-app.yml/badge.svg)](https://github.com/kziovas/practise-image-annotation-service-poc/actions/workflows/python-app.yml)
+
 ## Entity Relationship Diagram
 
 The Entity Relationship Diagram (ERD) provided below illustrates the structure of the database schema used in the application. It outlines the relationships between different entities such as User, Image, Comment, Annotation, and ImageSummary. The ERD serves as a visual representation of how data is organized and related within the database.
