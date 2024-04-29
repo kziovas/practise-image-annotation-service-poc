@@ -1,7 +1,6 @@
 import pytest
 
 from app.models.comment import Comment
-from app.models.image import Image
 from app.models.user import User
 from app.repos.comment import CommentRepo
 from app.repos.image import ImageRepo
