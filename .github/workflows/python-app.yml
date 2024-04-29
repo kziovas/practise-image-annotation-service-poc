@@ -39,6 +39,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Check if Docker Compose is installed
+        run: docker-compose --version
+
       - name: Start PostgreSQL service
         run: docker-compose -f docker-compose.yml up -d postgres
 
@@ -46,10 +49,7 @@ jobs:
         run: pytest tests/
 
       - name: Shutdown PostgreSQL service
-        run: docker-compose -f docker-compose.yml down postgres
-
-      - name: Check if Docker Compose is installed
-        run: docker-compose --version
+        run: docker-compose -f docker-compose.yml down
 
       #- name: Build and run Tests with Docker Compose
       #  run: |
