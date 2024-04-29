@@ -125,7 +125,6 @@ def create_comment(requesting_user: User):
 
     body = data.get("body")
     new_comment = CommentRepo.create(body=body, user_id=user_id, image_id=image_id)
-    breakpoint()
     ImageSummaryService.update_image_summary(image_id)
 
     return jsonify(comment_schema.dump(new_comment)), 201
