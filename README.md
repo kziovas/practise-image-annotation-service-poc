@@ -129,9 +129,6 @@ The Singleton Pattern is employed for common services and utility methods, ensur
 ### Endpoint Security with JWT
 JSON Web Token (JWT) is utilized to secure the endpoints of the application. JWT is a stateless authentication mechanism that generates tokens containing user claims, which are then used to authenticate and authorize requests. By leveraging JWT, the application ensures secure communication between clients and the server, mitigating risks associated with traditional session-based authentication methods.
 
-### Test-Driven Development (TDD) Approach
-The Test-Driven Development (TDD) approach is adopted to drive the development process, where each part of the code is written based on tests. This iterative process involves writing failing tests first, implementing code to pass those tests, and then refactoring the code to improve quality and maintainability. TDD promotes better code coverage, early bug detection, and faster feedback cycles, resulting in higher-quality software with fewer defects.
-
 ## Deployment and Execution
 
 ### Prerequisites
