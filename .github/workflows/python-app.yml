@@ -42,6 +42,10 @@ jobs:
       - name: Start PostgreSQL service
         run: docker-compose -f docker-compose.yml up -d postgres
 
+      - name: Set up environment variables
+        run: |
+          export DATABASE_URL="postgresql://admin:password@localhost:5433/image_annotation_db"
+
       - name: Run pytest
         run: pytest tests/
 
